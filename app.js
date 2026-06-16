@@ -17,10 +17,10 @@ const state = {
 
 const MODE_HINTS = {
   translate: '💬 Nhập tiếng Việt — Lily dịch sang tiếng Anh chuẩn giọng Mỹ',
-  correct:   '✏️ Nhập câu tiếng Anh — Lily sửa lỗi chính tả & ngữ pháp',
+  correct: '✏️ Nhập câu tiếng Anh — Lily sửa lỗi chính tả & ngữ pháp',
   pronounce: '🔊 Nhập câu tiếng Anh — Lily phát âm chuẩn giọng Mỹ',
-  rewrite:   '✨ Nhập câu tiếng Anh — Lily viết lại tự nhiên hơn',
-  explain:   '💡 Nhập từ tiếng Anh — Lily giải thích nghĩa & cách dùng',
+  rewrite: '✨ Nhập câu tiếng Anh — Lily viết lại tự nhiên hơn',
+  explain: '💡 Nhập từ tiếng Anh — Lily giải thích nghĩa & cách dùng',
 };
 
 const TARGET_LANGS = {
@@ -108,7 +108,7 @@ function addMessage({ text, isUser, showSpeakBtn = false }) {
 
   const bubble = document.createElement('div');
   bubble.className = 'msg-bubble';
-  
+
   if (showSpeakBtn && !isUser) {
     const speakBtn = document.createElement('button');
     speakBtn.className = 'speak-btn';
@@ -117,7 +117,7 @@ function addMessage({ text, isUser, showSpeakBtn = false }) {
     speakBtn.onclick = () => speakText(extractEnglishText(text));
     bubble.appendChild(speakBtn);
   }
-  
+
   const textSpan = document.createElement('span');
   textSpan.innerHTML = text.replace(/\n/g, '<br>');
   bubble.appendChild(textSpan);
@@ -169,19 +169,19 @@ function speakText(text) {
     alert('Trình duyệt không hỗ trợ phát âm!');
     return;
   }
-  
+
   window.speechSynthesis.cancel();
-  
+
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'en-US';
   utterance.rate = 0.9;
   utterance.pitch = 1;
-  
+
   const voices = window.speechSynthesis.getVoices();
-  const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('US')) 
-                || voices.find(v => v.lang.startsWith('en'));
+  const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('US'))
+    || voices.find(v => v.lang.startsWith('en'));
   if (enVoice) utterance.voice = enVoice;
-  
+
   window.speechSynthesis.speak(utterance);
 }
 
@@ -203,7 +203,7 @@ function showNoKeyWarning() {
 
 function getModePrompt(text) {
   const level = state.level === 'beginner' ? 'A1-A2' : state.level === 'intermediate' ? 'B1-B2' : 'C1-C2';
-  
+
   switch (state.currentMode) {
     case 'translate': {
       const langNames = { en: 'English', ja: 'Japanese', ko: 'Korean', zh: 'Chinese (Simplified)' };
@@ -256,7 +256,7 @@ async function processMessage() {
   try {
     const { system, user } = getModePrompt(text);
     const result = await callGemini(user, system);
-    
+
     removeTyping();
     state.isTyping = false;
 
@@ -318,7 +318,7 @@ function switchMode(modeKey) {
 function changeTargetLang(lang) {
   state.targetLang = lang;
   document.getElementById('target-lang-tag').textContent = TARGET_LANGS[lang].flag + ' ' + TARGET_LANGS[lang].name.split(' ')[0];
-  
+
   if (state.currentMode === 'translate') {
     messagesContainer.innerHTML = '';
     const hintLangs = { en: 'tiếng Anh', ja: 'tiếng Nhật', ko: 'tiếng Hàn', zh: 'tiếng Trung' };
@@ -391,7 +391,7 @@ document.querySelectorAll('.topic-chip').forEach(chip =>
   chip.addEventListener('click', () => switchMode(chip.dataset.topic))
 );
 
-document.getElementById('settings-modal').addEventListener('click', function(e) {
+document.getElementById('settings-modal').addEventListener('click', function (e) {
   if (e.target === this) closeModal('settings-modal');
 });
 
