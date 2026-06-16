@@ -33,30 +33,24 @@ const TARGET_LANGS = {
 async function callGemini(prompt, systemPrompt) {
   if (!state.apiKey) throw new Error('NO_API_KEY');
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${state.apiKey}`;
-
-  const systemMsg = { role: 'model', parts: [{ text: systemPrompt }] };
-  const userMsg = { role: 'user', parts: [{ text: prompt }] };
+  const url = 'https://api.groq.com/openai/v1/chat/completions';
 
   const body = {
-    systemInstruction: { role: 'system', parts: [{ text: systemPrompt }] },
-    contents: [userMsg],
-    generationConfig: {
-      temperature: 0.7,
-      topP: 0.95,
-      maxOutputTokens: 500,
-    },
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-    ],
+    model: 'llama-3.1-8b-instant',
+    max_tokens: 500,
+    temperature: 0.7,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: prompt }
+    ]
   };
 
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${state.apiKey}`
+    },
     body: JSON.stringify(body),
   });
 
@@ -66,7 +60,7 @@ async function callGemini(prompt, systemPrompt) {
   }
 
   const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = data?.choices?.[0]?.message?.content;
   if (!text) throw new Error('Empty response');
   return text.trim();
 }
