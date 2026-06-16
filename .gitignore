@@ -1,0 +1,10 @@
+# Secrets & credentials
+.env
+.greennode.json
+*.local
+
+# Tooling / vendored skills
+.claude/
+
+# Node
+node_modules/

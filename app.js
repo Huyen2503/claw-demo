@@ -11,7 +11,7 @@ const state = {
   currentMode: 'translate',
   targetLang: 'en',
   isTyping: false,
-  apiKey: localStorage.getItem('gemini_api_key') || '',
+  apiKey: localStorage.getItem('gemini_api_key') || window.GROQ_API_KEY || '',
   history: [],
 };
 
@@ -31,14 +31,9 @@ const TARGET_LANGS = {
 };
 
 async function callGemini(prompt, systemPrompt) {
-  if (!state.apiKey) throw new Error('NO_API_KEY');
-
-  const url = 'https://api.groq.com/openai/v1/chat/completions';
+  const url = '/api/chat';
 
   const body = {
-    model: 'llama-3.1-8b-instant',
-    max_tokens: 500,
-    temperature: 0.7,
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: prompt }
@@ -47,10 +42,7 @@ async function callGemini(prompt, systemPrompt) {
 
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${state.apiKey}`
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
 
@@ -60,7 +52,8 @@ async function callGemini(prompt, systemPrompt) {
   }
 
   const data = await res.json();
-  const text = data?.choices?.[0]?.message?.content;
+  const msg = data?.choices?.[0]?.message;
+  const text = msg?.content || msg?.reasoning;
   if (!text) throw new Error('Empty response');
   return text.trim();
 }
