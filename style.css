@@ -759,6 +759,12 @@ html, body {
   position: relative;
 }
 
+/* Reserve room for the absolutely-positioned speak button so it never
+   overlaps the text (button is 28px wide at right:8px). */
+.msg-bubble:has(.speak-btn) {
+  padding-right: 44px;
+}
+
 /* Language selector */
 .lang-selector {
   cursor: pointer;
