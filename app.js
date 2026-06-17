@@ -11,7 +11,7 @@ const state = {
   currentMode: 'translate',
   targetLang: 'en',
   isTyping: false,
-  apiKey: localStorage.getItem('gemini_api_key') || window.GROQ_API_KEY || '',
+  apiKey: localStorage.getItem('gemini_api_key') || '',
   history: [],
 };
 
@@ -241,11 +241,6 @@ async function processMessage() {
   const text = messageInput.value.trim();
   if (!text || state.isTyping) return;
 
-  if (!state.apiKey) {
-    showNoKeyWarning();
-    return;
-  }
-
   messageInput.value = '';
   autoResize();
   addMessage({ text, isUser: true });
@@ -408,10 +403,6 @@ Tôi có thể giúp bạn:
 Chọn chức năng bên dưới và bắt đầu nhé!`;
 
   setTimeout(() => addMessage({ text: greeting, isUser: false }), 400);
-
-  if (!state.apiKey) {
-    setTimeout(showNoKeyWarning, 1500);
-  }
 
   messageInput.focus();
 }
